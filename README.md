@@ -66,54 +66,41 @@ Here’s a C program to implement the Round Robin Scheduling algorithm:
 #include <stdio.h>
 
 int main() {
-    int i, n, time, remain, temps = 0, time_quantum;
-    int wait_time = 0, turnaround_time = 0, at[10], bt[10], rt[10];
-    
-    printf("Enter total number of processes: ");
+    int n, tq, bt[10], rt[10], t = 0, i;
+    printf("Processes: ");
     scanf("%d", &n);
-    remain = n;
-    
-    for(i = 0; i < n; i++) {
-        printf("Enter Arrival Time and Burst Time for Process %d: ", i+1);
-        scanf("%d %d", &at[i], &bt[i]);
+
+    printf("Burst times:\n");
+    for (i = 0; i < n; i++) {
+        scanf("%d", &bt[i]);
         rt[i] = bt[i];
     }
-    
-    printf("Enter Time Quantum: ");
-    scanf("%d", &time_quantum);
-    
-    printf("\nProcess\t|Turnaround Time|Waiting Time\n");
-    
-    for(time = 0, i = 0; remain != 0; ) {
-        if(rt[i] <= time_quantum && rt[i] > 0) {
-            time += rt[i];
-            rt[i] = 0;
-            temps = 1;
+
+    printf("Time quantum: ");
+    scanf("%d", &tq);
+
+    int wt[10] = {0}, done;
+    do {
+        done = 1;
+        for (i = 0; i < n; i++) {
+            if (rt[i] > 0) {
+                done = 0;
+                if (rt[i] > tq) {
+                    t += tq;
+                    rt[i] -= tq;
+                } else {
+                    t += rt[i];
+                    wt[i] = t - bt[i];
+                    rt[i] = 0;
+                }
+            }
         }
-        else if(rt[i] > 0) {
-            rt[i] -= time_quantum;
-            time += time_quantum;
-        }
-        
-        if(rt[i] == 0 && temps == 1) {
-            remain--;
-            printf("P[%d]\t|\t%d\t|\t%d\n", i+1, time - at[i], time - at[i] - bt[i]);
-            wait_time += time - at[i] - bt[i];
-            turnaround_time += time - at[i];
-            temps = 0;
-        }
-        
-        if(i == n-1)
-            i = 0;
-        else if(at[i+1] <= time)
-            i++;
-        else
-            i = 0;
-    }
-    
-    printf("\nAverage Waiting Time: %.2f", (float)wait_time/n);
-    printf("\nAverage Turnaround Time: %.2f\n", (float)turnaround_time/n);
-    
+    } while (!done);
+
+    printf("P\tBT\tWT\tTAT\n");
+    for (i = 0; i < n; i++)
+        printf("P%d\t%d\t%d\t%d\n", i + 1, bt[i], wt[i], bt[i] + wt[i]);
+
     return 0;
 }
 ```
