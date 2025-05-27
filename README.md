@@ -1,197 +1,129 @@
-Got it! Here’s a full practical write-up in a nice format, suitable for your exam notebook:
+Sure! Let’s tackle this step by step.
 
 
 ---
 
-Aim
+a) UNIX Commands
 
-To perform various operations on the Employee table using MySQL, including group by, lowest paid employee, order by, altering columns, and triggers.
+1. List of users currently logged in:
 
+who
 
----
+or
 
-Procedures
-
-1. Create the Employee table.
-
-
-2. Insert some sample data (if needed).
+w
 
 
-3. Use GROUP BY to display employee names and salary for department ‘xxx’.
+2. Print the calendar of the current month and year:
 
-
-4. Display the lowest paid employee in each department.
-
-
-5. List employee names in descending order.
-
-
-6. Rename a column using ALTER TABLE.
-
-
-7. Create a trigger to insert a row in the log table whenever a new row is inserted in Employee table.
+cal
 
 
 
 
 ---
 
-Queries
+b) Shell Script to Compute Simple Interest and Compound Interest
 
-1. Create the Employee table
+Here’s a simple shell script:
 
+#!/bin/bash
 
+echo "Enter Principal amount:"
+read p
 
-CREATE TABLE Employee (
-    Emp_no INT PRIMARY KEY,
-    Emp_name VARCHAR(50),
-    Emp_dept VARCHAR(50),
-    Job VARCHAR(50),
-    Mgr INT,
-    Sal DECIMAL(10,2)
-);
+echo "Enter Rate of Interest:"
+read r
 
+echo "Enter Time (in years):"
+read t
 
----
+# Simple Interest
+si=$(echo "scale=2; $p * $r * $t / 100" | bc)
+echo "Simple Interest: $si"
 
-2. Insert sample data (optional for testing)
+# Compound Interest
+# Using the formula: CI = P * ((1 + r/100)^t - 1)
+amount=$(echo "scale=2; $p * (1 + $r / 100)^$t" | bc -l)
+ci=$(echo "scale=2; $amount - $p" | bc)
+echo "Compound Interest: $ci"
 
+Save it as interest.sh, make it executable:
 
+chmod +x interest.sh
 
-INSERT INTO Employee (Emp_no, Emp_name, Emp_dept, Job, Mgr, Sal) VALUES
-(1, 'John', 'Sales', 'Manager', 101, 5000),
-(2, 'Alice', 'Sales', 'Executive', 101, 3000),
-(3, 'Bob', 'HR', 'Executive', 102, 4000),
-(4, 'Charlie', 'HR', 'Manager', 102, 6000),
-(5, 'David', 'IT', 'Executive', 103, 2000);
+Then run:
 
-
----
-
-3. a) Use GROUP BY to display Emp_name and salary for Emp_dept='Sales'
-
-
-
-SELECT Emp_name, Sal
-FROM Employee
-WHERE Emp_dept = 'Sales'
-GROUP BY Emp_name, Sal;
+./interest.sh
 
 
 ---
 
-4. b) Display lowest paid employee details under each department
+c) C Program for Round Robin Scheduling
 
+Here’s a C program to implement the Round Robin Scheduling algorithm:
 
+#include <stdio.h>
 
-SELECT Emp_dept, Emp_name, Sal
-FROM Employee e
-WHERE Sal = (
-    SELECT MIN(Sal)
-    FROM Employee
-    WHERE Emp_dept = e.Emp_dept
-);
+int main() {
+    int i, n, time, remain, temps = 0, time_quantum;
+    int wait_time = 0, turnaround_time = 0, at[10], bt[10], rt[10];
+    
+    printf("Enter total number of processes: ");
+    scanf("%d", &n);
+    remain = n;
+    
+    for(i = 0; i < n; i++) {
+        printf("Enter Arrival Time and Burst Time for Process %d: ", i+1);
+        scanf("%d %d", &at[i], &bt[i]);
+        rt[i] = bt[i];
+    }
+    
+    printf("Enter Time Quantum: ");
+    scanf("%d", &time_quantum);
+    
+    printf("\nProcess\t|Turnaround Time|Waiting Time\n");
+    
+    for(time = 0, i = 0; remain != 0; ) {
+        if(rt[i] <= time_quantum && rt[i] > 0) {
+            time += rt[i];
+            rt[i] = 0;
+            temps = 1;
+        }
+        else if(rt[i] > 0) {
+            rt[i] -= time_quantum;
+            time += time_quantum;
+        }
+        
+        if(rt[i] == 0 && temps == 1) {
+            remain--;
+            printf("P[%d]\t|\t%d\t|\t%d\n", i+1, time - at[i], time - at[i] - bt[i]);
+            wait_time += time - at[i] - bt[i];
+            turnaround_time += time - at[i];
+            temps = 0;
+        }
+        
+        if(i == n-1)
+            i = 0;
+        else if(at[i+1] <= time)
+            i++;
+        else
+            i = 0;
+    }
+    
+    printf("\nAverage Waiting Time: %.2f", (float)wait_time/n);
+    printf("\nAverage Turnaround Time: %.2f\n", (float)turnaround_time/n);
+    
+    return 0;
+}
 
+Compile and run:
 
----
-
-5. c) List the employee names in descending order
-
-
-
-SELECT Emp_name
-FROM Employee
-ORDER BY Emp_name DESC;
-
-
----
-
-6. d) Rename the column Emp_name to Employee_Name
-
-
-
-ALTER TABLE Employee
-CHANGE COLUMN Emp_name Employee_Name VARCHAR(50);
-
-
----
-
-7. e) Insert row in Employee table using a trigger
-
-
-
-i. Create log table for demonstration:
-
-CREATE TABLE Employee_log (
-    Emp_no INT,
-    Emp_name VARCHAR(50),
-    Action_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-);
-
-ii. Create the trigger:
-
-DELIMITER $$
-
-CREATE TRIGGER before_employee_insert
-BEFORE INSERT ON Employee
-FOR EACH ROW
-BEGIN
-    INSERT INTO Employee_log (Emp_no, Emp_name)
-    VALUES (NEW.Emp_no, NEW.Emp_name);
-END $$
-
-DELIMITER ;
-
-iii. Insert a row to test trigger:
-
-INSERT INTO Employee (Emp_no, Emp_name, Emp_dept, Job, Mgr, Sal)
-VALUES (6, 'Eve', 'Finance', 'Analyst', 104, 3500);
+gcc round_robin.c -o round_robin
+./round_robin
 
 
 ---
 
-Output & Result
-
-1. GROUP BY Output
-
-Displays employee names and salaries from Sales department.
-
-
-
-2. Lowest Paid Employee
-
-Displays the employee(s) with the lowest salary in each department.
-
-
-
-3. Descending Order List
-
-Lists employee names from Z to A.
-
-
-
-4. Renamed Column
-
-Emp_name column changed to Employee_Name.
-
-
-
-5. Trigger Output
-
-When you insert a new employee, a log entry is added automatically in Employee_log table.
-
-
-
-
-
----
-
-Result:
-Successfully performed the MySQL queries: created table, inserted data, used GROUP BY, found lowest paid employee, sorted data, renamed column, and created trigger.
-
-
----
-
-Let me know if you’d like this in a formatted document or if you need to modify it for your school/college’s template!
+Let me know if you’d like any tweaks or explanations!
 
