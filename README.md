@@ -6,18 +6,20 @@ Sure! Let’s tackle this step by step.
 a) UNIX Commands
 
 1. List of users currently logged in:
-
+```
 who
+```
 
 or
 
+```
 w
-
+```
 
 2. Print the calendar of the current month and year:
-
+```
 cal
-
+```
 
 
 
@@ -26,7 +28,7 @@ cal
 b) Shell Script to Compute Simple Interest and Compound Interest
 
 Here’s a simple shell script:
-
+```
 #!/bin/bash
 
 echo "Enter Principal amount:"
@@ -47,14 +49,19 @@ echo "Simple Interest: $si"
 amount=$(echo "scale=2; $p * (1 + $r / 100)^$t" | bc -l)
 ci=$(echo "scale=2; $amount - $p" | bc)
 echo "Compound Interest: $ci"
+```
 
 Save it as interest.sh, make it executable:
 
+```
 chmod +x interest.sh
+```
 
 Then run:
 
+```
 ./interest.sh
+```
 
 
 ---
@@ -63,6 +70,7 @@ c) C Program for Round Robin Scheduling
 
 Here’s a C program to implement the Round Robin Scheduling algorithm:
 
+```
 #include <stdio.h>
 
 int main() {
@@ -116,12 +124,14 @@ int main() {
     
     return 0;
 }
+```
 
 Compile and run:
 
+```
 gcc round_robin.c -o round_robin
 ./round_robin
-
+```
 
 ---
 
