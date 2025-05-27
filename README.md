@@ -29,25 +29,17 @@ b) Shell Script to Compute Simple Interest and Compound Interest
 
 Here’s a simple shell script:
 ```
-#!/bin/bash
-
-echo "Enter Principal amount:"
+echo "Enter Principal:"
 read p
-
 echo "Enter Rate of Interest:"
 read r
-
 echo "Enter Time (in years):"
 read t
 
-# Simple Interest
 si=$(echo "scale=2; $p * $r * $t / 100" | bc)
-echo "Simple Interest: $si"
+ci=$(echo "scale=2; $p * (1 + $r / 100)^$t - $p" | bc -l)
 
-# Compound Interest
-# Using the formula: CI = P * ((1 + r/100)^t - 1)
-amount=$(echo "scale=2; $p * (1 + $r / 100)^$t" | bc -l)
-ci=$(echo "scale=2; $amount - $p" | bc)
+echo "Simple Interest: $si"
 echo "Compound Interest: $ci"
 ```
 
