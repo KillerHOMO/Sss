@@ -1,26 +1,72 @@
 ```
-from sklearn import datasets 
-from sklearn.model_selection import train_test_split 
-from sklearn.ensemble import RandomForestClassifier, VotingClassifier 
-from sklearn.svm import SVC 
-from sklearn.linear_model import LogisticRegression 
- 
-iris = datasets.load_iris() 
- 
-X_train, X_test, y_train, y_test = train_test_split(iris.data, iris.target, 
-test_size=0.3) 
- 
-svc_model = SVC(kernel='linear', probability=True) 
-rf_model = RandomForestClassifier(n_estimators=10) 
-lr_model = LogisticRegression() 
+#include <stdio.h>
+#include <stdlib.h>
 
-ensemble = VotingClassifier(estimators=[('svc', svc_model), ('rf', rf_model), 
-('lr', lr_model)], voting='soft') 
-  
-ensemble.fit(X_train, y_train) 
+#define MAX_VERTICES 100
 
-y_pred = ensemble.predict(X_test) 
+struct Node {
+    int vertex;
+    struct Node* next;
+};
 
-print("Ensemble Accuracy:", ensemble.score(X_test, y_test))
+struct Graph {
+    int numVertices;
+    struct Node* adjList[MAX_VERTICES];
+    int visited[MAX_VERTICES];
+};
+
+struct Node* createNode(int vertex) {
+    struct Node* newNode = malloc(sizeof(struct Node));
+    newNode->vertex = vertex;
+    newNode->next = NULL;
+    return newNode;
+}
+
+struct Graph* createGraph(int vertices) {
+    struct Graph* graph = malloc(sizeof(struct Graph));
+    graph->numVertices = vertices;
+    for (int i = 0; i < vertices; i++) {
+        graph->adjList[i] = NULL;
+        graph->visited[i] = 0;
+    }
+    return graph;
+}
+
+void addEdge(struct Graph* graph, int src, int dest) {
+    struct Node* newNode = createNode(dest);
+    newNode->next = graph->adjList[src];
+    graph->adjList[src] = newNode;
+    newNode = createNode(src);
+    newNode->next = graph->adjList[dest];
+    graph->adjList[dest] = newNode;
+}
+
+void DFS(struct Graph* graph, int vertex) {
+    struct Node* adjList = graph->adjList[vertex];
+    struct Node* temp = adjList;
+    graph->visited[vertex] = 1;
+    printf("%d ", vertex);
+
+    while (temp != NULL) {
+        int connectedVertex = temp->vertex;
+        if (graph->visited[connectedVertex] == 0) {
+            DFS(graph, connectedVertex);
+        }
+        temp = temp->next;
+    }
+}
+
+int main() {
+    int vertices = 6;
+    struct Graph* graph = createGraph(vertices);
+    addEdge(graph, 0, 1);
+    addEdge(graph, 0, 2);
+    addEdge(graph, 1, 3);
+    addEdge(graph, 1, 4);
+    addEdge(graph, 2, 5);
+    printf("Depth First Search starting from vertex 0:\n");
+    DFS(graph, 0);
+    return 0;
+}
 
 ```
